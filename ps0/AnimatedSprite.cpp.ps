@@ -1,0 +1,972 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 50 50 545 792
+%%Title: Enscript Output
+%%Creator: GNU Enscript 1.6.5.90
+%%CreationDate: Fri Apr 26 19:39:07 2024
+%%Orientation: Portrait
+%%Pages: (atend)
+%%DocumentMedia: A4 595 842 0 () ()
+%%DocumentNeededResources: (atend)
+%%EndComments
+%%BeginProlog
+%%BeginResource: procset Enscript-Prolog 1.6.5 90
+%
+% Procedures.
+%
+
+/_S {	% save current state
+  /_s save def
+} def
+/_R {	% restore from saved state
+  _s restore
+} def
+
+/S {	% showpage protecting gstate
+  gsave
+  showpage
+  grestore
+} bind def
+
+/MF {	% fontname newfontname -> -	make a new encoded font
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  % insert only valid encoding vectors
+  encoding_vector length 256 eq {
+    newfont /Encoding encoding_vector put
+  } if
+
+  newfontname newfont definefont pop
+} def
+
+/MF_PS { % fontname newfontname -> -	make a new font preserving its enc
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  newfontname newfont definefont pop
+} def
+
+/SF { % fontname width height -> -	set a new font
+  /height exch def
+  /width exch def
+
+  findfont
+  [width 0 0 height 0 0] makefont setfont
+} def
+
+/SUF { % fontname width height -> -	set a new user font
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF
+  /F-gs-user-font width height SF
+} def
+
+/SUF_PS { % fontname width height -> -	set a new user font preserving its enc
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF_PS
+  /F-gs-user-font width height SF
+} def
+
+/M {moveto} bind def
+/s {show} bind def
+
+/Box {	% x y w h -> -			define box path
+  /d_h exch def /d_w exch def /d_y exch def /d_x exch def
+  d_x d_y  moveto
+  d_w 0 rlineto
+  0 d_h rlineto
+  d_w neg 0 rlineto
+  closepath
+} def
+
+/bgs {	% x y height blskip gray str -> -	show string with bg color
+  /str exch def
+  /gray exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    gray setgray
+    fill
+  grestore
+  x y M str s
+} def
+
+/bgcs { % x y height blskip red green blue str -> -  show string with bg color
+  /str exch def
+  /blue exch def
+  /green exch def
+  /red exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    red green blue setrgbcolor
+    fill
+  grestore
+  x y M str s
+} def
+
+% Highlight bars.
+/highlight_bars {	% nlines lineheight output_y_margin gray -> -
+  gsave
+    setgray
+    /ymarg exch def
+    /lineheight exch def
+    /nlines exch def
+
+    % This 2 is just a magic number to sync highlight lines to text.
+    0 d_header_y ymarg sub 2 sub translate
+
+    /cw d_output_w cols div def
+    /nrows d_output_h ymarg 2 mul sub lineheight div cvi def
+
+    % for each column
+    0 1 cols 1 sub {
+      cw mul /xp exch def
+
+      % for each rows
+      0 1 nrows 1 sub {
+        /rn exch def
+        rn lineheight mul neg /yp exch def
+        rn nlines idiv 2 mod 0 eq {
+	  % Draw highlight bar.  4 is just a magic indentation.
+	  xp 4 add yp cw 8 sub lineheight neg Box fill
+	} if
+      } for
+    } for
+
+  grestore
+} def
+
+% Line highlight bar.
+/line_highlight {	% x y width height gray -> -
+  gsave
+    /gray exch def
+    Box gray setgray fill
+  grestore
+} def
+
+% Column separator lines.
+/column_lines {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h translate
+    /cw d_output_w cols div def
+    1 1 cols 1 sub {
+      cw mul 0 moveto
+      0 d_output_h rlineto stroke
+    } for
+  grestore
+} def
+
+% Column borders.
+/column_borders {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h moveto
+    0 d_output_h rlineto
+    d_output_w 0 rlineto
+    0 d_output_h neg rlineto
+    closepath stroke
+  grestore
+} def
+
+% Do the actual underlay drawing
+/draw_underlay {
+  ul_style 0 eq {
+    ul_str true charpath stroke
+  } {
+    ul_str show
+  } ifelse
+} def
+
+% Underlay
+/underlay {	% - -> -
+  gsave
+    0 d_page_h translate
+    d_page_h neg d_page_w atan rotate
+
+    ul_gray setgray
+    ul_font setfont
+    /dw d_page_h dup mul d_page_w dup mul add sqrt def
+    ul_str stringwidth pop dw exch sub 2 div ul_h_ptsize -2 div moveto
+    draw_underlay
+  grestore
+} def
+
+/user_underlay {	% - -> -
+  gsave
+    ul_x ul_y translate
+    ul_angle rotate
+    ul_gray setgray
+    ul_font setfont
+    0 0 ul_h_ptsize 2 div sub moveto
+    draw_underlay
+  grestore
+} def
+
+% Page prefeed
+/page_prefeed {		% bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} def
+
+% Wrapped line markers
+/wrapped_line_mark {	% x y charwith charheight type -> -
+  /type exch def
+  /h exch def
+  /w exch def
+  /y exch def
+  /x exch def
+
+  type 2 eq {
+    % Black boxes (like TeX does)
+    gsave
+      0 setlinewidth
+      x w 4 div add y M
+      0 h rlineto w 2 div 0 rlineto 0 h neg rlineto
+      closepath fill
+    grestore
+  } {
+    type 3 eq {
+      % Small arrows
+      gsave
+        .2 setlinewidth
+        x w 2 div add y h 2 div add M
+        w 4 div 0 rlineto
+        x w 4 div add y lineto stroke
+
+        x w 4 div add w 8 div add y h 4 div add M
+        x w 4 div add y lineto
+	w 4 div h 8 div rlineto stroke
+      grestore
+    } {
+      % do nothing
+    } ifelse
+  } ifelse
+} def
+
+% EPSF import.
+
+/BeginEPSF {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack
+  userdict begin
+  /showpage { } def
+  0 setgray 0 setlinecap
+  1 setlinewidth 0 setlinejoin
+  10 setmiterlimit [ ] 0 setdash newpath
+  /languagelevel where {
+    pop languagelevel
+    1 ne {
+      false setstrokeadjust false setoverprint
+    } if
+  } if
+} bind def
+
+/EndEPSF {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+%%EndResource
+%%BeginResource: procset Enscript-Encoding-88591 1.6.5 90
+/encoding_vector [
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclam       	/quotedbl     	/numbersign   	
+/dollar       	/percent      	/ampersand    	/quoteright   	
+/parenleft    	/parenright   	/asterisk     	/plus         	
+/comma        	/hyphen       	/period       	/slash        	
+/zero         	/one          	/two          	/three        	
+/four         	/five         	/six          	/seven        	
+/eight        	/nine         	/colon        	/semicolon    	
+/less         	/equal        	/greater      	/question     	
+/at           	/A            	/B            	/C            	
+/D            	/E            	/F            	/G            	
+/H            	/I            	/J            	/K            	
+/L            	/M            	/N            	/O            	
+/P            	/Q            	/R            	/S            	
+/T            	/U            	/V            	/W            	
+/X            	/Y            	/Z            	/bracketleft  	
+/backslash    	/bracketright 	/asciicircum  	/underscore   	
+/quoteleft    	/a            	/b            	/c            	
+/d            	/e            	/f            	/g            	
+/h            	/i            	/j            	/k            	
+/l            	/m            	/n            	/o            	
+/p            	/q            	/r            	/s            	
+/t            	/u            	/v            	/w            	
+/x            	/y            	/z            	/braceleft    	
+/bar          	/braceright   	/tilde        	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclamdown   	/cent         	/sterling     	
+/currency     	/yen          	/brokenbar    	/section      	
+/dieresis     	/copyright    	/ordfeminine  	/guillemotleft	
+/logicalnot   	/hyphen       	/registered   	/macron       	
+/degree       	/plusminus    	/twosuperior  	/threesuperior	
+/acute        	/mu           	/paragraph    	/bullet       	
+/cedilla      	/onesuperior  	/ordmasculine 	/guillemotright	
+/onequarter   	/onehalf      	/threequarters	/questiondown 	
+/Agrave       	/Aacute       	/Acircumflex  	/Atilde       	
+/Adieresis    	/Aring        	/AE           	/Ccedilla     	
+/Egrave       	/Eacute       	/Ecircumflex  	/Edieresis    	
+/Igrave       	/Iacute       	/Icircumflex  	/Idieresis    	
+/Eth          	/Ntilde       	/Ograve       	/Oacute       	
+/Ocircumflex  	/Otilde       	/Odieresis    	/multiply     	
+/Oslash       	/Ugrave       	/Uacute       	/Ucircumflex  	
+/Udieresis    	/Yacute       	/Thorn        	/germandbls   	
+/agrave       	/aacute       	/acircumflex  	/atilde       	
+/adieresis    	/aring        	/ae           	/ccedilla     	
+/egrave       	/eacute       	/ecircumflex  	/edieresis    	
+/igrave       	/iacute       	/icircumflex  	/idieresis    	
+/eth          	/ntilde       	/ograve       	/oacute       	
+/ocircumflex  	/otilde       	/odieresis    	/divide       	
+/oslash       	/ugrave       	/uacute       	/ucircumflex  	
+/udieresis    	/yacute       	/thorn        	/ydieresis    	
+] def
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Courier
+/HFpt_w 10 def
+/HFpt_h 10 def
+/Courier-Bold /HF-gs-font MF
+/HF /HF-gs-font findfont [HFpt_w 0 0 HFpt_h 0 0] makefont def
+/Courier /F-gs-font MF
+/F-gs-font 10 10 SF
+/#copies 1 def
+% Pagedevice definitions:
+gs_languagelevel 1 gt {
+  <<
+    /PageSize [595 842] 
+  >> setpagedevice
+} if
+%%BeginResource: procset Enscript-Header-simple 1.6.5 90
+
+/do_header {	% print default simple header
+  gsave
+    d_header_x d_header_y HFpt_h 3 div add translate
+
+    HF setfont
+    user_header_p {
+      5 0 moveto user_header_left_str show
+
+      d_header_w user_header_center_str stringwidth pop sub 2 div
+      0 moveto user_header_center_str show
+
+      d_header_w user_header_right_str stringwidth pop sub 5 sub
+      0 moveto user_header_right_str show
+    } {
+      5 0 moveto fname show
+      45 0 rmoveto fmodstr show
+      45 0 rmoveto pagenumstr show
+    } ifelse
+
+  grestore
+} def
+%%EndResource
+/d_page_w 495 def
+/d_page_h 742 def
+/d_header_x 0 def
+/d_header_y 727 def
+/d_header_w 495 def
+/d_header_h 15 def
+/d_footer_x 0 def
+/d_footer_y 0 def
+/d_footer_w 495 def
+/d_footer_h 0 def
+/d_output_w 495 def
+/d_output_h 727 def
+/cols 1 def
+%%EndSetup
+%%Page: (1) 1
+%%BeginPageSetup
+_S
+50 50 translate
+/pagenum 1 def
+/fname (AnimatedSprite.cpp) def
+/fdir (.) def
+/ftail (AnimatedSprite.cpp) def
+% User defined strings:
+/fmodstr (Thu Jan 18 15:55:43 2024) def
+/pagenumstr (1) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+30 714 M (1:) s
+48 714 M
+(////////////////////////////////////////////////////////////) s
+30 703 M (2:) s
+48 703 M
+(//) s
+30 692 M (3:) s
+48 692 M
+(// Copyright \(C\) 2014 Maximilian Wagenbach \(aka. Foaly\) \(foaly.f@web.de\)) s
+30 681 M (4:) s
+48 681 M
+(//) s
+30 670 M (5:) s
+48 670 M
+(// This software is provided 'as-is', without any express or implied warr) s
+5 659 M
+(anty.) s
+30 648 M (6:) s
+48 648 M
+(// In no event will the authors be held liable for any damages arising) s
+30 637 M (7:) s
+48 637 M
+(// from the use of this software.) s
+30 626 M (8:) s
+48 626 M
+(//) s
+30 615 M (9:) s
+48 615 M
+(// Permission is granted to anyone to use this software for any purpose,) s
+24 604 M (10:) s
+48 604 M
+(// including commercial applications, and to alter it and redistribute it) s
+5 593 M
+( freely,) s
+24 582 M (11:) s
+48 582 M
+(// subject to the following restrictions:) s
+24 571 M (12:) s
+48 571 M
+(//) s
+24 560 M (13:) s
+48 560 M
+(// 1. The origin of this software must not be misrepresented;) s
+24 549 M (14:) s
+48 549 M
+(// you must not claim that you wrote the original software.) s
+24 538 M (15:) s
+48 538 M
+(// If you use this software in a product, an acknowledgment) s
+24 527 M (16:) s
+48 527 M
+(// in the product documentation would be appreciated but is not required.) s
+24 516 M (17:) s
+48 516 M
+(//) s
+24 505 M (18:) s
+48 505 M
+(// 2. Altered source versions must be plainly marked as such,) s
+24 494 M (19:) s
+48 494 M
+(// and must not be misrepresented as being the original software.) s
+24 483 M (20:) s
+48 483 M
+(//) s
+24 472 M (21:) s
+48 472 M
+(// 3. This notice may not be removed or altered from any source distribut) s
+5 461 M
+(ion.) s
+24 450 M (22:) s
+48 450 M
+(//) s
+24 439 M (23:) s
+48 439 M
+(////////////////////////////////////////////////////////////) s
+24 428 M (24:) s
+24 417 M (25:) s
+48 417 M
+(#include "AnimatedSprite.hpp") s
+24 406 M (26:) s
+24 395 M (27:) s
+48 395 M
+(AnimatedSprite::AnimatedSprite\(sf::Time frameTime, bool paused, bool loop) s
+5 384 M
+(ed\) :) s
+24 373 M (28:) s
+48 373 M
+(    m_animation\(NULL\), m_frameTime\(frameTime\), m_currentFrame\(0\),) s
+24 362 M (29:) s
+48 362 M
+(    m_isPaused\(paused\), m_isLooped\(looped\), m_texture\(NULL\) {) s
+24 351 M (30:) s
+48 351 M
+(}) s
+24 340 M (31:) s
+24 329 M (32:) s
+48 329 M
+(void AnimatedSprite::setAnimation\(const Animation& animation\) {) s
+24 318 M (33:) s
+48 318 M
+(    m_animation = &animation;) s
+24 307 M (34:) s
+48 307 M
+(    m_texture = m_animation->getSpriteSheet\(\);) s
+24 296 M (35:) s
+48 296 M
+(    m_currentFrame = 0;) s
+24 285 M (36:) s
+48 285 M
+(    setFrame\(m_currentFrame\);) s
+24 274 M (37:) s
+48 274 M
+(}) s
+24 263 M (38:) s
+24 252 M (39:) s
+48 252 M
+(void AnimatedSprite::setFrameTime\(sf::Time time\) {) s
+24 241 M (40:) s
+48 241 M
+(    m_frameTime = time;) s
+24 230 M (41:) s
+48 230 M
+(}) s
+24 219 M (42:) s
+24 208 M (43:) s
+48 208 M
+(void AnimatedSprite::play\(\) {) s
+24 197 M (44:) s
+48 197 M
+(    m_isPaused = false;) s
+24 186 M (45:) s
+48 186 M
+(}) s
+24 175 M (46:) s
+24 164 M (47:) s
+48 164 M
+(void AnimatedSprite::play\(const Animation& animation\) {) s
+24 153 M (48:) s
+48 153 M
+(    if \(getAnimation\(\) != &animation\)) s
+24 142 M (49:) s
+48 142 M
+(        setAnimation\(animation\);) s
+24 131 M (50:) s
+48 131 M
+(    play\(\);) s
+24 120 M (51:) s
+48 120 M
+(}) s
+24 109 M (52:) s
+24 98 M (53:) s
+48 98 M
+(void AnimatedSprite::pause\(\) {) s
+24 87 M (54:) s
+48 87 M
+(    m_isPaused = true;) s
+24 76 M (55:) s
+48 76 M
+(}) s
+24 65 M (56:) s
+24 54 M (57:) s
+48 54 M
+(void AnimatedSprite::stop\(\) {) s
+24 43 M (58:) s
+48 43 M
+(    m_isPaused = true;) s
+24 32 M (59:) s
+48 32 M
+(    m_currentFrame = 0;) s
+24 21 M (60:) s
+48 21 M
+(    setFrame\(m_currentFrame\);) s
+24 10 M (61:) s
+48 10 M
+(}) s
+_R
+S
+%%Page: (2) 2
+%%BeginPageSetup
+_S
+50 50 translate
+/pagenum 2 def
+/fname (AnimatedSprite.cpp) def
+/fdir (.) def
+/ftail (AnimatedSprite.cpp) def
+% User defined strings:
+/fmodstr (Thu Jan 18 15:55:43 2024) def
+/pagenumstr (2) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+24 714 M (62:) s
+24 703 M (63:) s
+48 703 M
+(void AnimatedSprite::setLooped\(bool looped\) {) s
+24 692 M (64:) s
+48 692 M
+(    m_isLooped = looped;) s
+24 681 M (65:) s
+48 681 M
+(}) s
+24 670 M (66:) s
+24 659 M (67:) s
+48 659 M
+(void AnimatedSprite::setColor\(const sf::Color& color\) {) s
+24 648 M (68:) s
+48 648 M
+(    // Update the vertices' color) s
+24 637 M (69:) s
+48 637 M
+(    m_vertices[0].color = color;) s
+24 626 M (70:) s
+48 626 M
+(    m_vertices[1].color = color;) s
+24 615 M (71:) s
+48 615 M
+(    m_vertices[2].color = color;) s
+24 604 M (72:) s
+48 604 M
+(    m_vertices[3].color = color;) s
+24 593 M (73:) s
+48 593 M
+(}) s
+24 582 M (74:) s
+24 571 M (75:) s
+48 571 M
+(const Animation* AnimatedSprite::getAnimation\(\) const {) s
+24 560 M (76:) s
+48 560 M
+(    return m_animation;) s
+24 549 M (77:) s
+48 549 M
+(}) s
+24 538 M (78:) s
+24 527 M (79:) s
+48 527 M
+(sf::FloatRect AnimatedSprite::getLocalBounds\(\) const {) s
+24 516 M (80:) s
+48 516 M
+(    sf::IntRect rect = m_animation->getFrame\(m_currentFrame\);) s
+24 505 M (81:) s
+24 494 M (82:) s
+48 494 M
+(    float width = static_cast<float>\(std::abs\(rect.width\)\);) s
+24 483 M (83:) s
+48 483 M
+(    float height = static_cast<float>\(std::abs\(rect.height\)\);) s
+24 472 M (84:) s
+24 461 M (85:) s
+48 461 M
+(    return sf::FloatRect\(0.f, 0.f, width, height\);) s
+24 450 M (86:) s
+48 450 M
+(}) s
+24 439 M (87:) s
+24 428 M (88:) s
+48 428 M
+(sf::FloatRect AnimatedSprite::getGlobalBounds\(\) const {) s
+24 417 M (89:) s
+48 417 M
+(    return getTransform\(\).transformRect\(getLocalBounds\(\)\);) s
+24 406 M (90:) s
+48 406 M
+(}) s
+24 395 M (91:) s
+24 384 M (92:) s
+48 384 M
+(bool AnimatedSprite::isLooped\(\) const {) s
+24 373 M (93:) s
+48 373 M
+(    return m_isLooped;) s
+24 362 M (94:) s
+48 362 M
+(}) s
+24 351 M (95:) s
+24 340 M (96:) s
+48 340 M
+(bool AnimatedSprite::isPlaying\(\) const {) s
+24 329 M (97:) s
+48 329 M
+(    return !m_isPaused;) s
+24 318 M (98:) s
+48 318 M
+(}) s
+24 307 M (99:) s
+18 296 M (100:) s
+48 296 M
+(sf::Time AnimatedSprite::getFrameTime\(\) const {) s
+18 285 M (101:) s
+48 285 M
+(    return m_frameTime;) s
+18 274 M (102:) s
+48 274 M
+(}) s
+18 263 M (103:) s
+18 252 M (104:) s
+48 252 M
+(void AnimatedSprite::setFrame\(std::size_t newFrame, bool resetTime\) {) s
+18 241 M (105:) s
+48 241 M
+(    if \(m_animation\) {) s
+18 230 M (106:) s
+48 230 M
+(        // calculate new vertex positions and texture coordiantes) s
+18 219 M (107:) s
+48 219 M
+(        sf::IntRect rect = m_animation->getFrame\(newFrame\);) s
+18 208 M (108:) s
+18 197 M (109:) s
+48 197 M
+(        m_vertices[0].position = sf::Vector2f\(0.f, 0.f\);) s
+18 186 M (110:) s
+48 186 M
+(        m_vertices[1].position = sf::Vector2f\(0.f, static_cast<float>\(rec) s
+5 175 M
+(t.height\)\);) s
+18 164 M (111:) s
+48 164 M
+(        m_vertices[2].position = sf::Vector2f\(static_cast<float>\(rect.wid) s
+5 153 M
+(th\),) s
+18 142 M (112:) s
+48 142 M
+(                                            static_cast<float>\(rect.heigh) s
+5 131 M
+(t\)\);) s
+18 120 M (113:) s
+48 120 M
+(        m_vertices[3].position = sf::Vector2f\(static_cast<float>\(rect.wid) s
+5 109 M
+(th\), 0.f\);) s
+18 98 M (114:) s
+18 87 M (115:) s
+48 87 M
+(        float left = static_cast<float>\(rect.left\) + 0.0001f;) s
+18 76 M (116:) s
+48 76 M
+(        float right = left + static_cast<float>\(rect.width\);) s
+18 65 M (117:) s
+48 65 M
+(        float top = static_cast<float>\(rect.top\);) s
+18 54 M (118:) s
+48 54 M
+(        float bottom = top + static_cast<float>\(rect.height\);) s
+18 43 M (119:) s
+18 32 M (120:) s
+48 32 M
+(        m_vertices[0].texCoords = sf::Vector2f\(left, top\);) s
+18 21 M (121:) s
+48 21 M
+(        m_vertices[1].texCoords = sf::Vector2f\(left, bottom\);) s
+18 10 M (122:) s
+48 10 M
+(        m_vertices[2].texCoords = sf::Vector2f\(right, bottom\);) s
+_R
+S
+%%Page: (3) 3
+%%BeginPageSetup
+_S
+50 50 translate
+/pagenum 3 def
+/fname (AnimatedSprite.cpp) def
+/fdir (.) def
+/ftail (AnimatedSprite.cpp) def
+% User defined strings:
+/fmodstr (Thu Jan 18 15:55:43 2024) def
+/pagenumstr (3) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+18 714 M (123:) s
+48 714 M
+(        m_vertices[3].texCoords = sf::Vector2f\(right, top\);) s
+18 703 M (124:) s
+48 703 M
+(    }) s
+18 692 M (125:) s
+18 681 M (126:) s
+48 681 M
+(    if \(resetTime\)) s
+18 670 M (127:) s
+48 670 M
+(        m_currentTime = sf::Time::Zero;) s
+18 659 M (128:) s
+48 659 M
+(}) s
+18 648 M (129:) s
+18 637 M (130:) s
+48 637 M
+(void AnimatedSprite::update\(sf::Time deltaTime\) {) s
+18 626 M (131:) s
+48 626 M
+(    // if not paused and we have a valid animation) s
+18 615 M (132:) s
+48 615 M
+(    if \(!m_isPaused && m_animation\) {) s
+18 604 M (133:) s
+48 604 M
+(        // add delta time) s
+18 593 M (134:) s
+48 593 M
+(        m_currentTime += deltaTime;) s
+18 582 M (135:) s
+18 571 M (136:) s
+48 571 M
+(        // if current time is bigger then the frame time advance one fram) s
+5 560 M
+(e) s
+18 549 M (137:) s
+48 549 M
+(        if \(m_currentTime >= m_frameTime\) {) s
+18 538 M (138:) s
+48 538 M
+(            // reset time, but keep the remainder) s
+18 527 M (139:) s
+48 527 M
+(         m_currentTime = sf::microseconds\(m_currentTime.asMicroseconds\(\) ) s
+5 516 M
+(%) s
+18 505 M (140:) s
+48 505 M
+(                                            m_frameTime.asMicroseconds\(\)\)) s
+5 494 M
+(;) s
+18 483 M (141:) s
+18 472 M (142:) s
+48 472 M
+(            // get next Frame index) s
+18 461 M (143:) s
+48 461 M
+(            if \(m_currentFrame + 1 < m_animation->getSize\(\)\) {) s
+18 450 M (144:) s
+48 450 M
+(                m_currentFrame++;) s
+18 439 M (145:) s
+48 439 M
+(            } else {) s
+18 428 M (146:) s
+48 428 M
+(                // animation has ended) s
+18 417 M (147:) s
+48 417 M
+(                if \(!m_isLooped\) {) s
+18 406 M (148:) s
+48 406 M
+(                    m_isPaused = true;) s
+18 395 M (149:) s
+48 395 M
+(                } else {) s
+18 384 M (150:) s
+48 384 M
+(                    m_currentFrame = 0;) s
+18 373 M (151:) s
+48 373 M
+(                    // reset to start) s
+18 362 M (152:) s
+48 362 M
+(                }) s
+18 351 M (153:) s
+48 351 M
+(            }) s
+18 340 M (154:) s
+18 329 M (155:) s
+48 329 M
+(            // set the current frame, not reseting the time) s
+18 318 M (156:) s
+48 318 M
+(            setFrame\(m_currentFrame, false\);) s
+18 307 M (157:) s
+48 307 M
+(        }) s
+18 296 M (158:) s
+48 296 M
+(    }) s
+18 285 M (159:) s
+48 285 M
+(}) s
+18 274 M (160:) s
+18 263 M (161:) s
+48 263 M
+(void AnimatedSprite::draw\(sf::RenderTarget& target, sf::RenderStates stat) s
+5 252 M
+(es\) const {) s
+18 241 M (162:) s
+48 241 M
+(    if \(m_animation && m_texture\) {) s
+18 230 M (163:) s
+48 230 M
+(        states.transform *= getTransform\(\);) s
+18 219 M (164:) s
+48 219 M
+(        states.texture = m_texture;) s
+18 208 M (165:) s
+48 208 M
+(        target.draw\(m_vertices, 4, sf::Quads, states\);) s
+18 197 M (166:) s
+48 197 M
+(    }) s
+18 186 M (167:) s
+48 186 M
+(}) s
+_R
+S
+%%Trailer
+%%Pages: 3
+%%DocumentNeededResources: font Courier-Bold Courier 
+%%EOF

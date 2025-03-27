@@ -1,0 +1,5 @@
+#!/bin/bash
+
+g++ -o ps2 main.cpp -lsfml-graphics -lsfml-window -lsfml-system
+
+./ps2
