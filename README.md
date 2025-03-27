@@ -4,7 +4,7 @@ A collection of C++ projects completed for Computing IV, utilizing SFML for grap
 
 ## Documentation
 
-[Full Project Portfolio](./Final-Portfolio.pdf)
+[Full Project Portfolio](./Final-Portfolio.pdf) (Produced with LaTeX)
 
 ## Projects Overview
 
